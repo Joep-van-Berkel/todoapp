@@ -8,6 +8,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import org.example.todoapp.controller.TaskController;
 import org.example.todoapp.model.TaskModel;
 
 public class HomeScreenView extends Scene {
@@ -17,8 +18,13 @@ public class HomeScreenView extends Scene {
     private final CheckBox highCheckbox;
     private final CheckBox mediumCheckbox;
     private final CheckBox lowCheckbox;
+    private final Button addTaskButton;
+
+    // instance variables for fonts
     private final Font titleFont;
     private final Font checkboxFont;
+
+    private TaskController controller;
 
     public HomeScreenView() {
         VBox root = new VBox();
@@ -36,10 +42,23 @@ public class HomeScreenView extends Scene {
         titleFont = Font.font("Montserrat", FontWeight.BOLD, 16);
         checkboxFont = Font.font("Montserrat", FontWeight.SEMI_BOLD, 14);
 
+        controller = new TaskController(this);
+
         setupView(root);
+    }
+
+    public String getDescription(){
+        return descriptionField.getText();
+    }
+
+    public String getPriority(){
+        if (highCheckbox.isSelected()) return "HIGH";
+        if (mediumCheckbox.isSelected()) return "MEDIUM";
+        if (lowCheckbox.isSelected()) return "LOW";
+
+        return null;
 
     }
-    private final Button addTaskButton;
 
     private void setupView(VBox root) {
         // Table columns
@@ -75,9 +94,29 @@ public class HomeScreenView extends Scene {
         mediumCheckbox.setFont(checkboxFont);
         lowCheckbox.setFont(checkboxFont);
 
+        highCheckbox.setOnAction(e -> {
+            if (highCheckbox.isSelected()) {
+                mediumCheckbox.setSelected(false);
+                lowCheckbox.setSelected(false);
+            }
+        });
+        mediumCheckbox.setOnAction(e -> {
+            if (mediumCheckbox.isSelected()) {
+                highCheckbox.setSelected(false);
+                lowCheckbox.setSelected(false);
+            }
+        });
+        lowCheckbox.setOnAction(e -> {
+            if (lowCheckbox.isSelected()) {
+                highCheckbox.setSelected(false);
+                mediumCheckbox.setSelected(false);
+            }
+        });
+
         // AddTask button
         addTaskButton.setMaxWidth(Double.MAX_VALUE);
         addTaskButton.setPrefHeight(40);
+        addTaskButton.setOnAction(e -> controller.saveTask());
 
         // Spacer
         Region spacer = new Region();
@@ -97,6 +136,14 @@ public class HomeScreenView extends Scene {
         root.getChildren().add(mainContainer);
 
         Platform.runLater(() -> mainContainer.requestFocus());
+    }
+
+    public void showAlert(String message, Alert.AlertType type){
+        Alert alert = new Alert(type);
+        alert.setTitle(type == Alert.AlertType.ERROR ? "Error" : "Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void populateTableView() {
