@@ -1,6 +1,8 @@
 package org.example.todoapp.controller;
 
 import javafx.scene.control.Alert;
+import org.example.todoapp.dao.TaskDao;
+import org.example.todoapp.model.TaskModel;
 import org.example.todoapp.view.HomeScreenView;
 
 public class TaskController {
@@ -18,7 +20,9 @@ public class TaskController {
 
         if (description == null || description.trim().isEmpty() || priority == null){
             view.showAlert("Not all fields have been filled in", Alert.AlertType.ERROR);
-
+            return;
         }
+        TaskModel newTask = new TaskModel(description.trim(), priority);
+        TaskDao.saveTask(newTask);
     }
 }
