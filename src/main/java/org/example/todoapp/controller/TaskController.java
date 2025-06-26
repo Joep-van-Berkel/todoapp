@@ -5,6 +5,8 @@ import org.example.todoapp.dao.TaskDao;
 import org.example.todoapp.model.TaskModel;
 import org.example.todoapp.view.HomeScreenView;
 
+import java.util.ArrayList;
+
 public class TaskController {
 
     private HomeScreenView view;
@@ -23,6 +25,29 @@ public class TaskController {
             return;
         }
         TaskModel newTask = new TaskModel(description.trim(), priority);
-        TaskDao.saveTask(newTask);
+
+        try {
+            TaskDao.saveTask(newTask);
+            refreshTable();
+        } catch (Exception e) {
+            view.showAlert("Error: " + e, Alert.AlertType.ERROR);
+        }
     }
+
+    public ArrayList<TaskModel> getAllTasks() {
+        ArrayList<TaskModel> tasks = new ArrayList<>();
+        try {
+            tasks = TaskDao.getAllTasks();
+
+        } catch (Exception e){
+            view.showAlert("Error: " + e, Alert.AlertType.ERROR);
+        }
+        return tasks;
+    }
+
+    public void refreshTable(){
+        ArrayList<TaskModel> tasks = getAllTasks();
+        view.getTable().getItems().addAll(tasks);
+    }
+
 }

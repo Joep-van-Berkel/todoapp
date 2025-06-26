@@ -1,5 +1,6 @@
 package org.example.todoapp.view;
 
+import com.mysql.cj.xdevapi.Table;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -12,6 +13,7 @@ import org.example.todoapp.controller.TaskController;
 import org.example.todoapp.model.TaskModel;
 
 public class HomeScreenView extends Scene {
+
     // Instance variables for UI components
     private final TableView<TaskModel> table;
     private final TextField descriptionField;
@@ -45,6 +47,7 @@ public class HomeScreenView extends Scene {
         controller = new TaskController(this);
 
         setupView(root);
+        controller.refreshTable();
     }
 
     public String getDescription(){
@@ -57,18 +60,21 @@ public class HomeScreenView extends Scene {
         if (lowCheckbox.isSelected()) return "LOW";
 
         return null;
+    }
 
+    public TableView getTable(){
+        return table;
     }
 
     private void setupView(VBox root) {
         // Table columns
         TableColumn<TaskModel, String> descriptionColumn = new TableColumn<>("Description");
-        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("Description"));
+        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         TableColumn<TaskModel, String> priorityColumn = new TableColumn<>("Priority");
-        priorityColumn.setCellValueFactory(new PropertyValueFactory<>("Priority"));
+        priorityColumn.setCellValueFactory(new PropertyValueFactory<>("priority"));
         TableColumn<TaskModel, Void> deleteColumn = new TableColumn<>("");
         table.getColumns().addAll(descriptionColumn, priorityColumn, deleteColumn);
-        table.setPrefWidth(800);
+        table.setPrefWidth(700);
         table.setMaxHeight(Double.MAX_VALUE);
         table.widthProperty().addListener((obs, oldVal, newVal) -> {
             double colWidth = newVal.doubleValue() / 3;
@@ -144,9 +150,5 @@ public class HomeScreenView extends Scene {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    private void populateTableView() {
-        // Implementation for populating the table
     }
 }
