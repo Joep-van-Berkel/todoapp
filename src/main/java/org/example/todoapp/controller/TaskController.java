@@ -45,8 +45,20 @@ public class TaskController {
         return tasks;
     }
 
+    public void deleteTask(TaskModel task){
+
+        try {
+            TaskDao.deleteTask(task);
+            refreshTable();
+        } catch (Exception e) {
+            view.showAlert("Error: " + e, Alert.AlertType.ERROR);
+        }
+    }
+
     public void refreshTable(){
         ArrayList<TaskModel> tasks = getAllTasks();
+
+        view.getTable().getItems().clear();
         view.getTable().getItems().addAll(tasks);
     }
 

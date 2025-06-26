@@ -73,6 +73,27 @@ public class HomeScreenView extends Scene {
         TableColumn<TaskModel, String> priorityColumn = new TableColumn<>("Priority");
         priorityColumn.setCellValueFactory(new PropertyValueFactory<>("priority"));
         TableColumn<TaskModel, Void> deleteColumn = new TableColumn<>("");
+        deleteColumn.setCellFactory(col -> new TableCell<TaskModel, Void>(){
+            private final Button deleteButton = new Button("Delete");
+
+            {
+                deleteButton.setOnAction(e -> {
+                    TaskModel task = table.getItems().get(getIndex());
+                    controller.deleteTask(task);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty){
+                super.updateItem(item, empty);
+                if (empty){
+                    setGraphic(null);
+                } else {
+                    setGraphic(deleteButton);
+                }
+            }
+
+        });
         table.getColumns().addAll(descriptionColumn, priorityColumn, deleteColumn);
         table.setPrefWidth(700);
         table.setMaxHeight(Double.MAX_VALUE);
